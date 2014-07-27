@@ -14,15 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.tomcatltpa.utils;
 
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.spec.KeySpec;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 import javax.crypto.Cipher;
@@ -40,16 +37,14 @@ import org.apache.commons.codec.binary.Base64;
  * <p>
  * @author Javier Murciego
  */
-
 public class LTPAUtils {
-    
-    
+
     private static final String DES_DECRIPTING_ALGORITHM = "DESede/ECB/PKCS5Padding";
     private static final String AES_DECRIPTING_ALGORITHM_ZERO_PADDING = "AES/CBC/NoPadding";
-    
+
     private byte[] secretKey = null;
-    
-    public LTPAUtils(String publicKey,String password) throws GeneralSecurityException {
+
+    public LTPAUtils(String publicKey, String password) throws GeneralSecurityException {
         this.secretKey = getSecretKey(publicKey, password);
     }
 
@@ -75,30 +70,25 @@ public class LTPAUtils {
         cipher.init(Cipher.DECRYPT_MODE, sKey, ivs16);
         return new String(cipher.doFinal(tokenBytes));
     }
-    
-    public boolean verifySignature(String signature){
+
+    public boolean verifySignature(String signature) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-
-    private String extractUserName(String token,String dnPrefix){
+    public String extractUserName(String token, String dnPrefix) {
         String dn = null;
         String userName = null;
         StringTokenizer st = new StringTokenizer(token, "%");
         String userInfo = st.nextToken();
-        String expires = st.nextToken();
-        Date d = new Date(Long.parseLong(expires));
-        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss z");
-        int beginIndex = userInfo.indexOf(dnPrefix+"=");
-        if( beginIndex !=-1 ){
+        int beginIndex = userInfo.indexOf(dnPrefix + "=");
+        if (beginIndex != -1) {
             dn = userInfo.substring(beginIndex);
-            userName = dn.substring( (dnPrefix+"=").length(),dn.indexOf(","));
-        }else{
-            throw new LTPATokenException("Invalid ltpaToken: dn with prefix " + dnPrefix +" not found. LTPA token value is " + userInfo);
+            userName = dn.substring((dnPrefix + "=").length(), dn.indexOf(","));
+        } else {
+            throw new LTPATokenException("Invalid ltpaToken: dn with prefix " + dnPrefix + " not found. LTPA token value is " + userInfo);
         }
         return userName;
-        
+
     }
-    
-    
+
 }
